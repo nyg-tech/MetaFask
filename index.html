@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#08080a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MetaFask">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>MetaFask</title>
+<style>
+:root{--bg:#08080a;--surface:rgba(255,255,255,.065);--surface2:rgba(255,255,255,.095);--border:rgba(255,255,255,.11);--text:#f5f5f7;--muted:#98989f;--green:#65d98a;--red:#ff6868;--shadow:0 24px 70px rgba(0,0,0,.34);--radius:26px}
+:root.light{--bg:#f5f5f7;--surface:rgba(255,255,255,.72);--surface2:rgba(255,255,255,.9);--border:rgba(0,0,0,.08);--text:#111113;--muted:#6e6e73;--shadow:0 20px 60px rgba(0,0,0,.1)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",sans-serif}
+body{overflow-x:hidden}
+button,input{font:inherit}
+button{border:0;color:inherit;cursor:pointer}
+.app{width:100%;max-width:520px;min-height:100vh;margin:auto;padding:env(safe-area-inset-top) 18px calc(112px + env(safe-area-inset-bottom))}
+.glass{background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}
+.hidden{display:none!important}
+header{display:flex;align-items:center;justify-content:space-between;padding:20px 2px 14px}
+.brand{font-weight:760;letter-spacing:-.7px;font-size:22px}
+.iconbtn{width:42px;height:42px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:grid;place-items:center}
+svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.page{display:none;animation:fade .25s ease}.page.active{display:block}
+@keyframes fade{from{opacity:.35;transform:translateY(5px)}to{opacity:1;transform:none}}
+.hero{text-align:center;padding:22px 0 18px}
+.coin-icon{width:64px;height:64px;border-radius:22px;margin:0 auto 15px;overflow:hidden;display:grid;place-items:center;background:var(--surface2);border:1px solid var(--border);font-size:28px;font-weight:700}
+.coin-icon img{width:100%;height:100%;object-fit:cover}
+.coin-name{font-size:20px;font-weight:700;letter-spacing:-.4px}
+.coin-symbol{color:var(--muted);font-size:13px;margin-top:4px;text-transform:uppercase}
+.balance{font-size:42px;line-height:1.05;font-weight:760;letter-spacing:-2px;margin-top:28px;word-break:break-word}
+.total{font-size:19px;color:var(--muted);margin-top:9px}
+.change{font-size:14px;font-weight:650;margin-top:12px}
+.positive{color:var(--green)}.negative{color:var(--red)}
+.card{border-radius:var(--radius);padding:18px;margin-top:18px}
+.cardhead{display:flex;align-items:center;justify-content:space-between}
+.label{font-size:13px;color:var(--muted)}
+.price{font-size:22px;font-weight:720;margin-top:5px}
+.chartwrap{height:190px;margin-top:14px;position:relative}
+canvas{width:100%;height:100%;display:block}
+.segment{display:flex;padding:4px;border-radius:16px;background:var(--surface);border:1px solid var(--border);margin-top:16px}
+.segment button{flex:1;padding:9px 3px;border-radius:12px;background:transparent;color:var(--muted);font-size:13px;font-weight:650}
+.segment button.active{background:var(--surface2);color:var(--text);box-shadow:0 4px 18px rgba(0,0,0,.12)}
+.notice{font-size:11px;line-height:1.5;color:var(--muted);text-align:center;padding:16px 12px}
+.nav{position:fixed;z-index:20;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(484px,calc(100% - 28px));display:flex;padding:7px;border-radius:24px}
+.nav button{flex:1;background:transparent;padding:10px 5px;border-radius:18px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:650}
+.nav button.active{color:var(--text);background:var(--surface2)}
+.nav svg{width:19px;height:19px}
+.page-title{font-size:32px;letter-spacing:-1.2px;font-weight:760;margin:20px 0 22px}
+.section{margin-top:22px}.section h2{font-size:14px;color:var(--muted);font-weight:600;margin:0 0 9px 6px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px;border-bottom:1px solid var(--border)}
+.row:first-child{border-radius:22px 22px 0 0}.row:last-child{border-bottom:0;border-radius:0 0 22px 22px}
+.rows{border-radius:22px;overflow:hidden}
+.rowleft{min-width:0}.rowtitle{font-size:15px;font-weight:650}.rowsub{font-size:12px;color:var(--muted);margin-top:4px}
+.rowvalue{font-size:14px;color:var(--muted);white-space:nowrap}
+.rowbutton{background:transparent;text-align:left;width:100%;display:flex;align-items:center;justify-content:space-between}
+.input{width:110px;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:13px;padding:10px 11px;outline:none;text-align:right}
+.input:focus{border-color:rgba(255,255,255,.28)}
+.choice{display:flex;gap:5px;padding:4px;background:var(--surface);border:1px solid var(--border);border-radius:14px}
+.choice button{background:transparent;color:var(--muted);border-radius:10px;padding:8px 9px;font-size:12px}.choice button.active{background:var(--surface2);color:var(--text)}
+.modal{position:fixed;z-index:50;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;padding:0}
+.sheet{width:min(520px,100%);max-height:82vh;border-radius:28px 28px 0 0;padding:18px 18px calc(22px + env(safe-area-inset-bottom));background:var(--bg);border:1px solid var(--border);box-shadow:0 -20px 70px rgba(0,0,0,.35);animation:sheet .25s ease}
+@keyframes sheet{from{transform:translateY(100%)}to{transform:none}}
+.sheettop{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.search{width:100%;padding:14px 16px;border-radius:16px;border:1px solid var(--border);outline:none;background:var(--surface);color:var(--text)}
+.results{margin-top:10px;max-height:58vh;overflow:auto}
+.coinresult{width:100%;display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:transparent;text-align:left}
+.coinresult:hover,.coinresult:active{background:var(--surface)}
+.coinresult img,.resulticon{width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--surface2);display:grid;place-items:center}
+.coinresultname{font-size:14px;font-weight:650}.coinsymbol{font-size:12px;color:var(--muted);margin-top:3px}
+.onboarding{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:28px}
+.onboardbox{width:min(460px,100%);text-align:center}
+.logo{width:82px;height:82px;border-radius:26px;margin:0 auto 22px;background:var(--surface2);border:1px solid var(--border);display:grid;place-items:center;font-size:34px;font-weight:800;box-shadow:var(--shadow)}
+.onboardbox h1{font-size:38px;letter-spacing:-1.5px;margin:0}.onboardbox p{color:var(--muted);margin:10px 0 30px}
+.primary{width:100%;padding:15px;border-radius:17px;background:var(--text);color:var(--bg);font-weight:750}
+.onstep{display:none}.onstep.active{display:block}
+.onstep h2{font-size:27px;letter-spacing:-.8px;margin:0 0 20px}
+.oninput{width:100%;padding:16px;border-radius:17px;border:1px solid var(--border);background:var(--surface);color:var(--text);outline:none;text-align:left}
+.balanceinput{font-size:26px;text-align:center}
+.error{margin-top:18px;padding:15px;border-radius:18px;text-align:center;background:var(--surface);border:1px solid var(--border)}
+.error h3{margin:0 0 5px;font-size:15px}.error p{margin:0;color:var(--muted);font-size:12px}
+.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;margin:auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;z-index:200;left:50%;bottom:110px;transform:translateX(-50%);padding:11px 16px;border-radius:14px;background:var(--surface2);border:1px solid var(--border);backdrop-filter:blur(20px);font-size:13px;box-shadow:var(--shadow)}
+.about{padding:18px;border-radius:22px}.about strong{font-size:18px}.about p{color:var(--muted);font-size:13px;line-height:1.55}
+@media(min-width:700px){body{padding:22px 0}.app{min-height:calc(100vh - 44px);border:1px solid var(--border);border-radius:36px;box-shadow:var(--shadow);padding-left:24px;padding-right:24px}.nav{bottom:28px}.onboarding{position:fixed}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div id="onboarding" class="onboarding">
+  <div class="onboardbox">
+    <div class="onstep active" data-step="1">
+      <div class="logo">M</div><h1>MetaFask</h1><p data-i18n="tagline">Your personal crypto portfolio.</p>
+      <button class="primary" id="startBtn" data-i18n="getStarted">Get Started</button>
+    </div>
+    <div class="onstep" data-step="2">
+      <h2 data-i18n="chooseCoin">Choose your cryptocurrency</h2>
+      <input id="onSearch" class="oninput" placeholder="Search cryptocurrency..." autocomplete="off">
+      <div id="onResults" class="results"></div>
+    </div>
+    <div class="onstep" data-step="3">
+      <h2 data-i18n="howMuch">How much do you own?</h2>
+      <div style="position:relative"><input id="onBalance" class="oninput balanceinput" inputmode="decimal" value="0.042"><span id="onSymbol" style="position:absolute;right:15px;top:18px;color:var(--muted);font-size:13px"></span></div>
+      <div style="height:12px"></div><button class="primary" id="balanceNext" data-i18n="continue">Continue</button>
+    </div>
+    <div class="onstep" data-step="4">
+      <div class="logo">✓</div><h2 data-i18n="ready">Your portfolio is ready.</h2><p data-i18n="fictional">This is a fictional demo balance.</p>
+      <button class="primary" id="openBtn" data-i18n="open">Open MetaFask</button>
+    </div>
+  </div>
+</div>
+
+<main id="app" class="app hidden">
+<header><div class="brand">MetaFask</div><button id="settingsTop" class="iconbtn" aria-label="Settings">
+<svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.5 1.5-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V20h-2.12v-.4a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-1.5-1.5.06-.06A1.7 1.7 0 0 0 9.16 15a1.7 1.7 0 0 0-1.56-1.03H7.2v-2.12h.4A1.7 1.7 0 0 0 9.16 10a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.5-1.5.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1.03-1.56V5h2.12v.4a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.5 1.5-.06.06A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.56 1.03h.4v2.12h-.4A1.7 1.7 0 0 0 19.4 15Z"/></svg>
+</button></header>
+
+<section id="home" class="page active" data-page="home">
+  <div class="hero">
+    <div id="coinIcon" class="coin-icon">₿</div>
+    <div id="coinName" class="coin-name">Bitcoin</div><div id="coinSymbol" class="coin-symbol">BTC</div>
+    <div id="balance" class="balance">0.042 BTC</div><div id="total" class="total">≈ ₺0</div><div id="change" class="change">—</div>
+  </div>
+  <div class="card glass">
+    <div class="cardhead"><div><div class="label" data-i18n="currentPrice">Current Price</div><div id="price" class="price">Loading…</div></div><div id="chartSpinner" class="spinner"></div></div>
+    <div class="chartwrap"><canvas id="homeChart"></canvas></div>
+    <div class="segment"><button data-days="1" class="active">24H</button><button data-days="7">7D</button><button data-days="30">30D</button><button data-days="365">1Y</button></div>
+  </div>
+  <div id="error" class="error hidden"><h3 id="errorTitle"></h3><p id="errorText"></p><button id="retry" style="margin-top:10px;background:transparent;text-decoration:underline" data-i18n="tryAgain">Try Again</button></div>
+  <div class="notice" data-i18n="demoNotice">MetaFask is a demo portfolio. No real cryptocurrency is stored or transferred.</div>
+</section>
+
+<section id="chart" class="page" data-page="chart">
+  <div class="page-title" data-i18n="chart">Chart</div>
+  <div class="card glass">
+    <div class="cardhead"><div><div id="chartCoinName" class="coin-name">Bitcoin</div><div id="chartCoinSymbol" class="coin-symbol">BTC</div></div><div style="text-align:right"><div id="chartPrice" class="price">—</div><div id="chartChange" class="change">—</div></div></div>
+    <div class="chartwrap" style="height:300px"><canvas id="mainChart"></canvas></div>
+    <div class="segment"><button data-days="1" class="active">24H</button><button data-days="7">7D</button><button data-days="30">30D</button><button data-days="365">1Y</button></div>
+  </div>
+</section>
+
+<section id="settings" class="page" data-page="settings">
+  <div class="page-title" data-i18n="settings">Settings</div>
+  <div class="section"><h2 data-i18n="portfolio">Portfolio</h2><div class="rows glass">
+    <button id="coinRow" class="row rowbutton"><div class="rowleft"><div class="rowtitle" data-i18n="cryptocurrency">Cryptocurrency</div><div id="settingsCoin" class="rowsub">Bitcoin · BTC</div></div><div class="rowvalue">›</div></button>
+    <div class="row"><div class="rowleft"><div class="rowtitle" data-i18n="yourBalance">Your Balance</div><div class="rowsub" data-i18n="fictionalAmount">Fictional amount</div></div><input id="balanceInput" class="input" inputmode="decimal"></div>
+  </div></div>
+  <div class="section"><h2 data-i18n="appearance">Appearance</h2><div class="rows glass"><div class="row"><div class="rowleft"><div class="rowtitle" data-i18n="theme">Theme</div></div><div class="choice"><button data-theme="light" data-i18n="light">Light</button><button data-theme="dark" data-i18n="dark">Dark</button><button data-theme="system" data-i18n="system">System</button></div></div></div></div>
+  <div class="section"><h2 data-i18n="language">Language</h2><div class="rows glass"><div class="row"><div class="rowleft"><div class="rowtitle">Language</div></div><div class="choice"><button data-lang="tr">Türkçe</button><button data-lang="en">English</button></div></div></div></div>
+  <div class="section"><h2 data-i18n="about">About</h2><div class="about glass"><strong>MetaFask</strong><p data-i18n="aboutText">Your personal crypto portfolio.<br>Version 1.0.0<br><br>Demo portfolio — no real cryptocurrency is stored or transferred.</p></div></div>
+</section>
+
+<nav class="nav glass" aria-label="Navigation">
+<button data-nav="home" class="active"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/></svg><span data-i18n="home">Home</span></button>
+<button data-nav="chart"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 4-4 3 2 5-6"/></svg><span data-i18n="chart">Chart</span></button>
+<button data-nav="settings"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.5 1.5-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V20h-2.12v-.4a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-1.5-1.5.06-.06A1.7 1.7 0 0 0 9.16 15a1.7 1.7 0 0 0-1.56-1.03H7.2v-2.12h.4A1.7 1.7 0 0 0 9.16 10a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.5-1.5.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1.03-1.56V5h2.12v.4a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.5 1.5-.06.06A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.56 1.03h.4v2.12h-.4A1.7 1.7 0 0 0 19.4 15Z"/></svg><span data-i18n="settings">Settings</span></button>
+</nav>
+</main>
+
+<div id="modal" class="modal hidden"><div class="sheet"><div class="sheettop"><strong data-i18n="chooseCoin">Choose your cryptocurrency</strong><button id="closeModal" class="iconbtn">×</button></div><input id="search" class="search" placeholder="Search cryptocurrency..." autocomplete="off"><div id="results" class="results"></div></div></div>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+(()=>{"use strict";
+const API="https://api.coingecko.com/api/v3";
+const S="metafask_";
+const state={coin:{id:"bitcoin",name:"Bitcoin",symbol:"BTC",image:""},balance:.042,price:0,change:0,days:1,lang:"en",theme:"dark",points:[]};
+const tr={en:{tagline:"Your personal crypto portfolio.",getStarted:"Get Started",chooseCoin:"Choose your cryptocurrency",howMuch:"How much do you own?",continue:"Continue",ready:"Your portfolio is ready.",fictional:"This is a fictional demo balance.",open:"Open MetaFask",currentPrice:"Current Price",tryAgain:"Try Again",demoNotice:"MetaFask is a demo portfolio. No real cryptocurrency is stored or transferred.",portfolio:"Portfolio",cryptocurrency:"Cryptocurrency",yourBalance:"Your Balance",fictionalAmount:"Fictional amount",appearance:"Appearance",theme:"Theme",light:"Light",dark:"Dark",system:"System",language:"Language",about:"About",aboutText:"Your personal crypto portfolio.<br>Version 1.0.0<br><br>Demo portfolio — no real cryptocurrency is stored or transferred.",home:"Home",chart:"Chart",settings:"Settings"},tr:{tagline:"Kişisel kripto portföyünüz.",getStarted:"Başla",chooseCoin:"Kripto para seç",howMuch:"Ne kadar var?",continue:"Devam",ready:"Portföyünüz hazır.",fictional:"Bu tamamen sanal bir demo bakiyesidir.",open:"MetaFask'ı Aç",currentPrice:"Güncel Fiyat",tryAgain:"Tekrar Dene",demoNotice:"MetaFask bir demo portföydür. Gerçek kripto para saklanmaz veya transfer edilmez.",portfolio:"Portföy",cryptocurrency:"Kripto Para",yourBalance:"Bakiyeniz",fictionalAmount:"Sanal miktar",appearance:"Görünüm",theme:"Tema",light:"Açık",dark:"Koyu",system:"Sistem",language:"Dil",about:"Hakkında",aboutText:"Kişisel kripto portföyünüz.<br>Sürüm 1.0.0<br><br>Demo portföy — gerçek kripto para saklanmaz veya transfer edilmez.",home:"Ana Sayfa",chart:"Grafik",settings:"Ayarlar"}};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=x=>String(x).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const fallback=s=>({BTC:"₿",ETH:"Ξ",SOL:"S",DOGE:"Ð",XRP:"X",ADA:"A",DOT:"●",LTC:"Ł"}[String(s||"").toUpperCase()]||"₿");
+function save(){localStorage.setItem(S+"coin",JSON.stringify(state.coin));localStorage.setItem(S+"balance",state.balance);localStorage.setItem(S+"lang",state.lang);localStorage.setItem(S+"theme",state.theme);localStorage.setItem(S+"done","1")}
+function load(){try{const c=JSON.parse(localStorage.getItem(S+"coin")||"null");if(c?.id)state.coin=c;const b=Number(localStorage.getItem(S+"balance"));if(Number.isFinite(b)&&b>=0)state.balance=b;const l=localStorage.getItem(S+"lang");if(l==="tr"||l==="en")state.lang=l;const t=localStorage.getItem(S+"theme");if(["light","dark","system"].includes(t))state.theme=t}catch{}}
+function resolvedTheme(){return state.theme==="system"?(matchMedia("(prefers-color-scheme:light)").matches?"light":"dark"):state.theme}
+function applyTheme(){document.documentElement.classList.toggle("light",resolvedTheme()==="light");$$("[data-theme]").forEach(b=>b.classList.toggle("active",b.dataset.theme===state.theme))}
+function applyLang(){$$("[data-i18n]").forEach(e=>e.innerHTML=tr[state.lang][e.dataset.i18n]??e.innerHTML);$$("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===state.lang));updateUI()}
+function money(v){return new Intl.NumberFormat("tr-TR",{style:"currency",currency:"TRY",maximumFractionDigits:v<1?6:2}).format(v||0)}
+function amount(v){return new Intl.NumberFormat(state.lang==="tr"?"tr-TR":"en-US",{maximumFractionDigits:8}).format(v)}
+function updateUI(){const c=state.coin,s=String(c.symbol||"").toUpperCase();$("#coinName").textContent=c.name;$("#coinSymbol").textContent=s;$("#balance").textContent=amount(state.balance)+" "+s;$("#total").textContent="≈ "+money(state.balance*state.price);$("#price").textContent=state.price?money(state.price):"Loading…";$("#chartPrice").textContent=state.price?money(state.price):"—";$("#chartChange").textContent=state.change?((state.change>0?"+":"")+state.change.toFixed(2)+"%"):"—";$("#change").textContent=state.change?((state.change>0?"+":"")+state.change.toFixed(2)+"%"):"—";$("#change").className="change "+(state.change>=0?"positive":"negative");$("#chartChange").className="change "+(state.change>=0?"positive":"negative");$("#chartCoinName").textContent=c.name;$("#chartCoinSymbol").textContent=s;$("#settingsCoin").textContent=c.name+" · "+s;$("#balanceInput").value=state.balance;$("#onSymbol").textContent=s;const icon=$("#coinIcon");icon.innerHTML=c.image?'<img src="'+esc(c.image)+'" alt="">':fallback(s)}
+async function api(path){const r=await fetch(API+path,{cache:"no-store"});if(r.status===429)throw Error("RATE");if(!r.ok)throw Error("HTTP");return r.json()}
+async function getPrice(){try{const d=await api("/simple/price?ids="+encodeURIComponent(state.coin.id)+"&vs_currencies=try&include_24hr_change=true");const x=d?.[state.coin.id];if(!x)throw Error("COIN");state.price=Number(x.try)||0;state.change=Number(x.try_24h_change)||0;hideError();updateUI();await drawChart()}catch(e){showError(e.message==="COIN"?"Cryptocurrency not found":(e.message==="RATE"?"Rate limit reached":"Unable to load market data"))}}
+async function getInfo(){if(state.coin.image)return;try{const d=await api("/coins/"+encodeURIComponent(state.coin.id)+"?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false");state.coin.image=d?.image?.large||"";save();updateUI()}catch{}}
+async function searchCoins(q,box){if(!q.trim()){box.innerHTML="";return}try{const d=await api("/search?query="+encodeURIComponent(q.trim()));box.innerHTML=(d.coins||[]).slice(0,12).map(c=>'<button class="coinresult" data-id="'+esc(c.id)+'" data-name="'+esc(c.name)+'" data-symbol="'+esc(c.symbol)+'" data-image="'+esc(c.large||c.thumb||"")+'"><span class="resulticon">'+(c.large?'<img src="'+esc(c.large)+'" alt="">':fallback(c.symbol))+'</span><span><span class="coinresultname">'+esc(c.name)+'</span><br><span class="coinsymbol">'+esc(String(c.symbol||"").toUpperCase())+'</span></span></button>').join("")}catch{box.innerHTML=""}}
+function select(el,next){state.coin={id:el.dataset.id,name:el.dataset.name,symbol:String(el.dataset.symbol).toUpperCase(),image:el.dataset.image||""};updateUI();if(next)showStep(next);else{save();$("#modal").classList.add("hidden");getPrice();getInfo();toast(tr[state.lang].saved||"Saved")}}
+function showStep(n){$$(".onstep").forEach(x=>x.classList.toggle("active",x.dataset.step==n))}
+function openApp(){localStorage.setItem(S+"done","1");save();$("#onboarding").classList.add("hidden");$("#app").classList.remove("hidden");updateUI();getPrice();getInfo()}
+function nav(page){$$(".page").forEach(p=>p.classList.toggle("active",p.dataset.page===page));$$("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===page))}
+function showError(title){$("#errorTitle").textContent=title;$("#errorText").textContent=tr[state.lang].tryAgain;$("#error").classList.remove("hidden")}
+function hideError(){$("#error").classList.add("hidden")}
+function toast(t){const x=$("#toast");x.textContent=t;x.classList.remove("hidden");clearTimeout(window.__toast);window.__toast=setTimeout(()=>x.classList.add("hidden"),1800)}
+function drawLine(canvas,pts){const ctx=canvas.getContext("2d"),d=devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;canvas.width=w*d;canvas.height=h*d;ctx.scale(d,d);ctx.clearRect(0,0,w,h);if(!pts.length)return;const vals=pts.map(p=>p[1]),min=Math.min(...vals),max=Math.max(...vals),range=max-min||1;const pad=6;const xy=(i,v)=>[pad+i*(w-pad*2)/(vals.length-1||1),h-pad-(v-min)/range*(h-pad*2)];const line=new Path2D();vals.forEach((v,i)=>{const [x,y]=xy(i,v);i?line.lineTo(x,y):line.moveTo(x,y)});ctx.lineWidth=2;ctx.strokeStyle=state.change>=0?"#65d98a":"#ff6868";ctx.stroke(line);const fill=new Path2D(line);fill.lineTo(w-pad,h);fill.lineTo(pad,h);fill.closePath();const g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,state.change>=0?"rgba(101,217,138,.20)":"rgba(255,104,104,.20)");g.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=g;ctx.fill(fill)}
+async function drawChart(){try{const d=await api("/coins/"+encodeURIComponent(state.coin.id)+"/market_chart?vs_currency=try&days="+state.days+"&precision=4");state.points=d.prices||[];drawLine($("#homeChart"),state.points);drawLine($("#mainChart"),state.points)}catch{}}
+function setup(){load();applyTheme();applyLang();if(localStorage.getItem(S+"done")==="1"){$("#onboarding").classList.add("hidden");$("#app").classList.remove("hidden");getPrice();getInfo()}else{$("#onboarding").classList.remove("hidden");showStep(1);state.coin=state.coin||{id:"bitcoin",name:"Bitcoin",symbol:"BTC",image:""}}updateUI();
+$("#startBtn").onclick=()=>showStep(2);$("#balanceNext").onclick=()=>{const v=Number($("#onBalance").value);if(Number.isFinite(v)&&v>=0){state.balance=v;save();showStep(4)}};$("#openBtn").onclick=openApp;$("#settingsTop").onclick=()=>nav("settings");$("#retry").onclick=getPrice;$("#coinRow").onclick=()=>$("#modal").classList.remove("hidden");$("#closeModal").onclick=()=>$("#modal").classList.add("hidden");
+$("#balanceInput").onchange=e=>{const v=Number(e.target.value);if(Number.isFinite(v)&&v>=0){state.balance=v;save();updateUI()}else e.target.value=state.balance};
+$("#search").oninput=e=>{clearTimeout(window.__search);window.__search=setTimeout(()=>searchCoins(e.target.value,$("#results")),300)};$("#onSearch").oninput=e=>{clearTimeout(window.__onsearch);window.__onsearch=setTimeout(()=>searchCoins(e.target.value,$("#onResults")),300)};
+document.addEventListener("click",e=>{const c=e.target.closest(".coinresult");if(c){if(c.closest("#onResults"))select(c,3);else select(c)}const n=e.target.closest("[data-nav]");if(n)nav(n.dataset.nav);const d=e.target.closest("[data-days]");if(d){state.days=Number(d.dataset.days);$$("[data-days]").forEach(x=>x.classList.toggle("active",x.dataset.days==state.days));drawChart()}const th=e.target.closest("[data-theme]");if(th){state.theme=th.dataset.theme;save();applyTheme()}const la=e.target.closest("[data-lang]");if(la){state.lang=la.dataset.lang;save();applyLang()}});window.addEventListener("resize",()=>{drawLine($("#homeChart"),state.points);drawLine($("#mainChart"),state.points)});window.addEventListener("online",getPrice);matchMedia("(prefers-color-scheme:light)").addEventListener?.("change",()=>state.theme==="system"&&applyTheme());setInterval(()=>{if(document.visibilityState==="visible"&&!$("#app").classList.contains("hidden"))getPrice()},45000)}
+document.addEventListener("DOMContentLoaded",setup);
+})();
+</script>
+</body>
+</html>
